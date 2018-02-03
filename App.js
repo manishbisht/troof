@@ -18,21 +18,21 @@ export default class App extends React.Component {
 
     login() {
         this.setState({
-            isLoggedIn: false
+            isLoggedIn: true
         });
     }
 
     logout() {
         this.setState({
-            isLoggedIn: true
+            isLoggedIn: false
         });
     }
 
     render() {
         if (this.state.isLoggedIn)
-            return <Home onLogoutPress={this.login}/>;
+            return <Home onLogoutPress={this.logout}/>;
         else
-            return <Login onLoginPress={this.logout}/>;
+            return <Login onLoginPress={this.login}/>;
     }
 }
 
