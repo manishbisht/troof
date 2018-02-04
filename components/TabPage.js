@@ -16,6 +16,14 @@ export default class TabPage extends Component {
             );
         }, this);
 
+        if (this.props.nearByError === 'showaccount') {
+            return (
+                <View>
+                    <Button onPress={this.props.onLogoutPress} title="Logout" />
+                </View>
+            )
+        }
+
         return (
             <View style={{padding: 0}}>
                 <Text
@@ -23,7 +31,7 @@ export default class TabPage extends Component {
                     {this.props.index}
                     {this.props.userLocation.latitude}
                 </Text>
-                {this.props.nearByError != 'showaccount' && PlacesList}
+                {PlacesList}
             </View>
         )
     }

@@ -191,7 +191,8 @@ export default class Home extends Component {
     _renderScene = ({route}) => (
         <ScrollView style={{height: 500}}>
             <TabPage index={this.state.index} userLocation={this.state.userLocation}
-                     nearByData={this.state.nearByData} nearByError={this.state.nearByError}/>
+                     nearByData={this.state.nearByData} nearByError={this.state.nearByError}
+                     onLogoutPress={this.props.onLogoutPress}/>
         </ScrollView>
     );
 
