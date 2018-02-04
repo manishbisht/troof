@@ -3,16 +3,19 @@
  */
 import React, {Component} from 'react';
 import {ScrollView, Text, TextInput, View, Button} from 'react-native';
+import PlaceItem from './PlaceItem';
 
 export default class TabPage extends Component {
     constructor(props) {
         super(props);
     }
 
+
+
     render() {
         var PlacesList = this.props.nearByData.map(function (place, index) {
             return (
-                <Text key={place.place_id}>{place.name}</Text>
+                <PlaceItem key={place.place_id} data={place}></PlaceItem>
             );
         }, this);
 
@@ -26,11 +29,6 @@ export default class TabPage extends Component {
 
         return (
             <View style={{padding: 0}}>
-                <Text
-                    style={{fontSize: 27}}>
-                    {this.props.index}
-                    {this.props.userLocation.latitude}
-                </Text>
                 {PlacesList}
             </View>
         )
