@@ -37,6 +37,7 @@ export default class Home extends Component {
         };
 
         this.onRegionChange = this.onRegionChange.bind(this);
+        this._handleIndexChange = this._handleIndexChange.bind(this);
     }
 
     componentDidMount() {
@@ -63,9 +64,30 @@ export default class Home extends Component {
                 longitude: region.longitude
             }
         });
+        this.getNearbyData(this.state.index);
+    }
+
+    componentWillUnmount() {
+        navigator.geolocation.clearWatch(this.watchID);
+    }
+
+    getNearbyData(index) {
+        var type = "hospital";
+        if (index === 1) {
+            type = "police";
+        } else if (index === 2) {
+            this.setState({
+                nearByError: "showaccount"
+            });
+            return;
+        }
 
         var self = this;
-        var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + this.state.userLocation.latitude + ',' + this.state.userLocation.longitude + '&radius=5000&types=police&key=AIzaSyBnrN3ItuATQhSrpzvp_DV6DQk6-tSN5tg';
+        var base = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
+        var latitude = this.state.userLocation.latitude;
+        var longitude = this.state.userLocation.longitude;
+        var key = 'AIzaSyBnrN3ItuATQhSrpzvp_DV6DQk6-tSN5tg';
+        var url = base + latitude + ',' + longitude + '&radius=5000&types=' + type + '&key=' + key;
 
         fetch(url)
             .then(
@@ -78,6 +100,7 @@ export default class Home extends Component {
                     response.json().then(function (data) {
                         self.setState({
                             nearByData: data.results,
+                            nearByError: '',
                         });
                     });
                 }
@@ -86,14 +109,14 @@ export default class Home extends Component {
             });
     }
 
-    componentWillUnmount() {
-        navigator.geolocation.clearWatch(this.watchID);
-    }
-
-    _handleIndexChange = index =>
+    _handleIndexChange(index) {
         this.setState({
-            index,
+            index: index,
+            nearByData: [],
+            nearByError: "loading"
         });
+        this.getNearbyData(index);
+    }
 
     _renderIndicator = props => {
         const {width, position} = props;
@@ -151,17 +174,6 @@ export default class Home extends Component {
         <Ionicons name={route.icon} size={24} style={styles.icon}/>
     );
 
-    _renderBadge = ({route}) => {
-        if (route.key === '2') {
-            return (
-                <View style={styles.badge}>
-                    <Text style={styles.count}>42</Text>
-                </View>
-            );
-        }
-        return null;
-    };
-
     _getLabelText = ({route}) => route.title;
 
     _renderFooter = props => (
@@ -169,7 +181,6 @@ export default class Home extends Component {
             {...props}
             getLabelText={this._getLabelText}
             renderIcon={this._renderIcon}
-            renderBadge={this._renderBadge}
             renderIndicator={this._renderIndicator}
             labelStyle={styles.label}
             tabStyle={styles.tab}
@@ -179,7 +190,8 @@ export default class Home extends Component {
 
     _renderScene = ({route}) => (
         <ScrollView style={{height: 500}}>
-            <TabPage index={this.state.index} userLocation={this.state.userLocation}/>
+            <TabPage index={this.state.index} userLocation={this.state.userLocation}
+                     nearByData={this.state.nearByData} nearByError={this.state.nearByError}/>
         </ScrollView>
     );
 
@@ -238,17 +250,6 @@ const styles = StyleSheet.create({
         borderRadius: 0,
         backgroundColor: '#0084ff',
         margin: 6,
-    },
-    badge: {
-        marginTop: 4,
-        marginRight: 32,
-        backgroundColor: '#f44336',
-        height: 24,
-        width: 24,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 4,
     },
     count: {
         color: '#fff',
